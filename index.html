@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CarePoint Hospital Management System</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="toast" class="toast"></div>
+
+<!-- AUTHENTICATION -->
+<div id="authScreen" class="auth-screen">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="brand-mark">✚</div>
+      <div><h1>CarePoint</h1><span>Hospital Management System</span></div>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-auth="adminLogin">Admin Login</button>
+      <button class="auth-tab" data-auth="visitorLogin">Visitor Login</button>
+      <button class="auth-tab" data-auth="visitorRegister">Visitor Register</button>
+    </div>
+
+    <form id="adminLogin" class="auth-form active">
+      <div class="form-title"><span class="icon-box blue">♙</span><div><h2>Administrator Login</h2><p>Secure access to the administrator menu.</p></div></div>
+      <label>Admin User ID
+        <input id="adminUser" type="text" autocomplete="username" required placeholder="Enter admin username">
+      </label>
+      <label>Password
+        <input id="adminPass" type="password" autocomplete="current-password" required placeholder="Enter admin password">
+      </label>
+      <button class="btn primary wide" type="submit">Sign In</button>
+    </form>
+
+    <form id="visitorLogin" class="auth-form">
+      <div class="form-title"><span class="icon-box green">●</span><div><h2>Visitor Login</h2><p>User ID and password protected session.</p></div></div>
+      <label>User ID
+        <input id="visitorUser" type="text" required minlength="8" placeholder="Minimum 8 characters">
+      </label>
+      <label>Password
+        <input id="visitorPass" type="password" required placeholder="10+ chars, upper, number, special">
+      </label>
+      <div class="validation-note">Password must contain at least 10 characters, one uppercase, one number and one special character.</div>
+      <button class="btn primary wide" type="submit">Sign In</button>
+    </form>
+
+    <form id="visitorRegister" class="auth-form">
+      <div class="form-title"><span class="icon-box orange">＋</span><div><h2>Visitor Registration</h2><p>Create an account to access visitor features.</p></div></div>
+      <div class="two-fields">
+        <label>User ID
+          <input id="regUser" type="text" minlength="8" required placeholder="Minimum 8 characters">
+        </label>
+        <label>First Name
+          <input id="regFirst" type="text" required>
+        </label>
+      </div>
+      <div class="two-fields">
+        <label>Last Name
+          <input id="regLast" type="text" required>
+        </label>
+        <label>Email ID
+          <input id="regEmail" type="email" required>
+        </label>
+      </div>
+      <div class="two-fields">
+        <label>Password
+          <input id="regPass" type="password" required>
+        </label>
+        <label>Confirm Password
+          <input id="regConfirm" type="password" required>
+        </label>
+      </div>
+      <div class="two-fields">
+        <label>Mobile Number
+          <input id="regMobile" type="tel" inputmode="numeric" pattern="[6-9][0-9]{9}" maxlength="10" required placeholder="Starts with 6, 7, 8 or 9">
+        </label>
+        <label>City
+          <select id="regCity" required>
+            <option value="">Select City</option><option>Anantapur</option><option>Bengaluru</option><option>Hyderabad</option><option>Guntur</option><option>Vijayawada</option><option>Tirupati</option><option>Other</option>
+          </select>
+        </label>
+      </div>
+      <fieldset class="gender-field">
+        <legend>Gender</legend>
+        <label><input type="radio" name="regGender" value="Male" required> Male</label>
+        <label><input type="radio" name="regGender" value="Female"> Female</label>
+        <label><input type="radio" name="regGender" value="Other"> Other</label>
+      </fieldset>
+      <button class="btn primary wide" type="submit">Create Visitor Account</button>
+    </form>
+  </div>
+</div>
+
+<!-- APPLICATION -->
+<div id="app" class="app hidden">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">✚</div>
+      <div><b>CarePoint</b><span>Hospital</span></div>
+    </div>
+
+    <div class="profile-mini">
+      <div class="avatar" id="sideAvatar">AD</div>
+      <div><b id="sideName">Administrator</b><span id="sideRole">Admin</span></div>
+    </div>
+
+    <div class="menu-label">ADMIN MENU</div>
+    <nav id="adminNav" class="nav">
+      <button class="nav-item active" data-page="dashboard"><span>01</span> Dashboard</button>
+      <button class="nav-item" data-page="patients"><span>02</span> View Patients</button>
+      <button class="nav-item" data-page="search"><span>03</span> Search by PID</button>
+      <button class="nav-item" data-page="update"><span>04</span> Update by Email</button>
+      <button class="nav-item" data-page="delete"><span>05</span> Delete by Mobile</button>
+      <button class="nav-item" data-page="transactions"><span>06</span> Transactions</button>
+      <button class="nav-item" data-page="complaints"><span>07</span> Complaints</button>
+      <button class="nav-item" data-page="hospital"><span>08</span> Hospital Facilities</button>
+    </nav>
+
+    <div class="menu-label visitor-only">VISITOR MENU</div>
+    <nav id="visitorNav" class="nav hidden">
+      <button class="nav-item active" data-page="visitorHome"><span>01</span> Home</button>
+      <button class="nav-item" data-page="hospital"><span>02</span> View Facilities</button>
+      <button class="nav-item" data-page="complaints"><span>03</span> Register Complaint</button>
+    </nav>
+
+    <button id="logoutBtn" class="logout">↪ <span>Logout / Exit</span></button>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button id="menuBtn" class="mobile-menu">☰</button>
+      <div>
+        <h1 id="pageTitle">Dashboard</h1>
+        <p id="dateText"></p>
+      </div>
+      <div class="top-user"><span class="online">● Online</span><div class="avatar" id="topAvatar">AD</div></div>
+    </header>
+
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="page active">
+      <div class="hero admin-hero">
+        <div><span class="eyebrow">ADMINISTRATOR CONSOLE</span><h2>Hospital Control Center</h2><p>Use the menu to register, view, search, update and delete patient records.</p></div>
+        <button class="btn light" onclick="openPatientModal()">＋ Patient Registration</button>
+      </div>
+      <div class="stat-grid">
+        <div class="stat"><div class="stat-icon blue">♙</div><div><small>Total Patients</small><b id="statTotal">0</b></div></div>
+        <div class="stat"><div class="stat-icon green">✓</div><div><small>Active Patients</small><b id="statActive">0</b></div></div>
+        <div class="stat"><div class="stat-icon orange">↗</div><div><small>Discharged</small><b id="statDischarged">0</b></div></div>
+        <div class="stat"><div class="stat-icon red">⚑</div><div><small>Complaints</small><b id="statComplaints">0</b></div></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><div><h3>Administrator Menu</h3><p>Web equivalent of the menu-based console requirements.</p></div></div>
+        <div class="menu-cards">
+          <button onclick="showPage('patients')"><strong>1</strong><span>View Patient Details</span><small>Display active registered patients with finite pagination.</small></button>
+          <button onclick="showPage('search')"><strong>2</strong><span>Search Patient by PID</span><small>Search and display complete patient information.</small></button>
+          <button onclick="showPage('update')"><strong>3</strong><span>Update by Email</span><small>Update editable patient details without changing PID.</small></button>
+          <button onclick="showPage('delete')"><strong>4</strong><span>Delete by Mobile</span><small>Delete a patient using the registered mobile number.</small></button>
+          <button onclick="openPatientModal()"><strong>5</strong><span>Patient Registration</span><small>Generate a unique PID after registration.</small></button>
+          <button onclick="showPage('transactions')"><strong>6</strong><span>Transactions</span><small>Process admission, discharge and outpatient activity.</small></button>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="panel"><div class="panel-head"><h3>Recent Patients</h3><button class="link-btn" onclick="showPage('patients')">View all</button></div><div id="recentTable"></div></div>
+        <div class="panel"><div class="panel-head"><h3>System Notes</h3></div><ul class="notes"><li>Patient PID is generated automatically.</li><li>PID cannot be edited after registration.</li><li>All demo data is stored in browser LocalStorage.</li><li>Exit logs the current user out of the session.</li></ul></div>
+      </div>
+    </section>
+
+    <!-- PATIENT VIEW -->
+    <section id="patients" class="page">
+      <div class="section-title"><div><span class="eyebrow">US003</span><h2>View Registered Patients</h2><p>Active patient records are shown with complete details.</p></div><button class="btn primary" onclick="openPatientModal()">＋ Register Patient</button></div>
+      <div class="panel">
+        <div class="toolbar"><input id="viewSearch" placeholder="🔎 Search name, PID, email or mobile"><select id="viewStatus"><option value="">All Status</option><option>Active</option><option>Discharged</option></select></div>
+        <div id="patientTable"></div>
+        <div id="patientPagination" class="pagination"></div>
+      </div>
+    </section>
+
+    <!-- SEARCH -->
+    <section id="search" class="page">
+      <div class="section-title"><div><span class="eyebrow">US004</span><h2>Search Patient by PID</h2><p>Enter a PID to retrieve the patient's details.</p></div></div>
+      <div class="panel search-panel">
+        <div class="search-row"><input id="pidSearch" placeholder="Enter PID e.g. P100001"><button class="btn primary" onclick="searchByPID()">Search Patient</button></div>
+        <div id="pidResult" class="result-area"><div class="empty">Enter a PID and click Search.</div></div>
+      </div>
+    </section>
+
+    <!-- UPDATE -->
+    <section id="update" class="page">
+      <div class="section-title"><div><span class="eyebrow">US005</span><h2>Update Patient by Email</h2><p>Search by email and update editable details. PID is read-only.</p></div></div>
+      <div class="panel">
+        <div class="search-row"><input id="emailSearch" type="email" placeholder="Enter registered patient email"><button class="btn primary" onclick="loadUpdatePatient()">Find Patient</button></div>
+        <form id="updateForm" class="edit-form hidden">
+          <input type="hidden" id="updatePid">
+          <div class="readonly-badge">PID: <b id="updatePidText"></b> — cannot be changed</div>
+          <div class="two-fields">
+            <label>First Name<input id="updateFirst" required></label><label>Last Name<input id="updateLast" required></label>
+          </div>
+          <div class="two-fields">
+            <label>Email ID<input id="updateEmail" type="email" required></label><label>Mobile Number<input id="updateMobile" pattern="[6-9][0-9]{9}" maxlength="10" required></label>
+          </div>
+          <div class="two-fields">
+            <label>Doctor ID
+              <select id="updateDoctorId" required></select>
+            </label>
+            <label>Doctor Name
+              <select id="updateDoctor" required></select>
+            </label>
+          </div>
+          <div class="two-fields">
+            <label>City<select id="updateCity" required><option>Anantapur</option><option>Bengaluru</option><option>Hyderabad</option><option>Guntur</option><option>Vijayawada</option><option>Tirupati</option><option>Other</option></select></label>
+            <label>Department<select id="updateDept"><option>General Medicine</option><option>Cardiology</option><option>Orthopedics</option><option>Pediatrics</option><option>Emergency</option><option>Diagnostics</option></select></label>
+          </div>
+          <div class="two-fields">
+            <label>Address<input id="updateAddress" required></label>
+            <label>Contact Number<input id="updateContact" required inputmode="numeric" pattern="[6-9][0-9]{9}" maxlength="10"></label>
+          </div>
+          <label>Status
+            <select id="updateStatus" required>
+              <option>Active</option>
+              <option>Discharged</option>
+            </select>
+          </label>
+          <button class="btn primary" type="submit">Save Updated Details</button>
+        </form>
+        <div id="updateMessage" class="result-area"><div class="empty">Find a patient using email.</div></div>
+      </div>
+    </section>
+
+    <!-- DELETE -->
+    <section id="delete" class="page">
+      <div class="section-title"><div><span class="eyebrow">US006</span><h2>Delete Patient by Mobile</h2><p>Search the patient list using the registered mobile number.</p></div></div>
+      <div class="panel danger-panel">
+        <div class="search-row"><input id="deleteMobile" inputmode="numeric" placeholder="Enter 10 digit mobile number"><button class="btn danger" onclick="deleteByMobile()">Find & Delete</button></div>
+        <div id="deleteResult" class="result-area"><div class="empty">Enter a mobile number to continue.</div></div>
+      </div>
+    </section>
+
+    <!-- TRANSACTIONS -->
+    <section id="transactions" class="page">
+      <div class="section-title"><div><span class="eyebrow">TRANSACTION PROCESSING</span><h2>Admissions & Discharges</h2><p>Process hospital transactions for registered patients.</p></div></div>
+      <div class="panel">
+        <form id="transactionForm" class="two-fields">
+          <label>Patient<select id="txnPatient" required></select></label>
+          <label>Transaction Type<select id="txnType" required><option>Admission</option><option>Discharge</option><option>Outpatient Visit</option></select></label>
+          <label>Department<select id="txnDept"><option>General Medicine</option><option>Cardiology</option><option>Orthopedics</option><option>Pediatrics</option><option>Emergency</option><option>Diagnostics</option></select></label>
+          <label>Remarks<input id="txnRemarks" placeholder="Room / visit notes"></label>
+          <button class="btn primary" type="submit">Process Transaction</button>
+        </form>
+      </div>
+      <div class="panel"><div class="panel-head"><h3>Transaction History</h3><button class="btn small danger-outline" onclick="clearTransactions()">Clear</button></div><div id="transactionTable"></div></div>
+    </section>
+
+    <!-- HOSPITAL -->
+    <section id="hospital" class="page">
+      <div class="section-title"><div><span class="eyebrow">US009</span><h2>Hospital Facilities — Department Wise</h2><p>Visitors can view available facilities by department with finite records per screen.</p></div></div>
+      <div class="facility-filter">
+        <button class="facility-tab active" data-dept="All">All</button>
+        <button class="facility-tab" data-dept="Emergency">Emergency</button>
+        <button class="facility-tab" data-dept="Cardiology">Cardiology</button>
+        <button class="facility-tab" data-dept="Orthopedics">Orthopedics</button>
+        <button class="facility-tab" data-dept="Pediatrics">Pediatrics</button>
+        <button class="facility-tab" data-dept="General Medicine">General Medicine</button>
+      </div>
+      <div id="facilityGrid" class="facility-grid"></div>
+      <div id="facilityPagination" class="pagination"></div>
+    </section>
+
+    <!-- COMPLAINTS -->
+    <section id="complaints" class="page">
+      <div class="section-title"><div><span class="eyebrow">US010</span><h2>Register Complaint</h2><p>Visitors can register complaints and receive success/error responses.</p></div></div>
+      <div class="two-col">
+        <div class="panel" id="complaintFormPanel">
+          <h3>Complaint Form</h3>
+          <form id="complaintForm">
+            <label>Subject<input id="complaintSubject" required placeholder="Complaint subject"></label>
+            <label>Category<select id="complaintCategory"><option>Department Service</option><option>Staff Behaviour</option><option>Facility</option><option>Billing</option><option>Other</option></select></label>
+            <label>Department<select id="complaintDept"><option>Emergency</option><option>Cardiology</option><option>Orthopedics</option><option>Pediatrics</option><option>General Medicine</option><option>Administration</option></select></label>
+            <label>Description<textarea id="complaintMessage" required placeholder="Describe the issue..."></textarea></label>
+            <button class="btn primary wide" type="submit">Submit Complaint</button>
+          </form>
+        </div>
+        <div class="panel"><div class="panel-head"><h3 id="complaintHeading">Complaint Records</h3></div><div id="complaintTable"></div></div>
+      </div>
+    </section>
+
+    <!-- VISITOR HOME -->
+    <section id="visitorHome" class="page">
+      <div class="hero visitor-hero"><div><span class="eyebrow">VISITOR PORTAL</span><h2 id="visitorWelcome">Welcome</h2><p>View hospital facilities department-wise and register a complaint when required.</p></div><button class="btn light" onclick="showPage('hospital')">View Facilities</button></div>
+      <div class="stat-grid visitor-stats">
+        <div class="stat"><div class="stat-icon blue">✚</div><div><small>Departments</small><b>6</b></div></div>
+        <div class="stat"><div class="stat-icon green">●</div><div><small>Emergency</small><b>24/7</b></div></div>
+        <div class="stat"><div class="stat-icon orange">☎</div><div><small>Help Desk</small><b>24×7</b></div></div>
+        <div class="stat"><div class="stat-icon red">⚑</div><div><small>My Complaints</small><b id="myComplaintCount">0</b></div></div>
+      </div>
+      <div class="panel"><div class="panel-head"><h3>Visitor Features</h3></div><div class="feature-list"><div><b>Department-wise Facilities</b><span>Browse a finite number of hospital facilities per screen.</span></div><div><b>Complaint Registration</b><span>Submit complaints with department and description.</span></div><div><b>Secure Session</b><span>Logout/Exit returns to the protected login page.</span></div></div></div>
+    </section>
+  </main>
+</div>
+
+<!-- PATIENT REGISTRATION MODAL -->
+<div id="patientModal" class="modal">
+  <div class="modal-card">
+    <div class="modal-head"><div><span class="eyebrow">US002</span><h2>Admin — Register Patient</h2><p>A unique PID will be generated automatically.</p></div><button class="close" onclick="closePatientModal()">×</button></div>
+    <form id="patientForm">
+      <div class="readonly-pid">PID: <span>Generated automatically after successful registration</span></div>
+      <div class="two-fields">
+        <label>First Name<input id="pFirst" required></label><label>Last Name<input id="pLast" required></label>
+      </div>
+      <div class="two-fields">
+        <label>Email ID<input id="pEmail" type="email" required></label><label>Mobile Number<input id="pMobile" pattern="[6-9][0-9]{9}" maxlength="10" inputmode="numeric" required></label>
+      </div>
+      <div class="two-fields">
+        <label>Gender
+          <span class="radio-row"><label><input type="radio" name="pGender" value="Male" required> Male</label><label><input type="radio" name="pGender" value="Female"> Female</label><label><input type="radio" name="pGender" value="Other"> Other</label></span>
+        </label>
+        <label>City<select id="pCity" required><option value="">Select City</option><option>Anantapur</option><option>Bengaluru</option><option>Hyderabad</option><option>Guntur</option><option>Vijayawada</option><option>Tirupati</option><option>Other</option></select></label>
+      </div>
+      <div class="two-fields">
+        <label>Doctor ID
+          <select id="pDoctorId" required></select>
+        </label>
+        <label>Doctor Name
+          <select id="pDoctor" required></select>
+        </label>
+        <label>Department
+          <select id="pDept" required>
+            <option>General Medicine</option><option>Cardiology</option><option>Orthopedics</option><option>Pediatrics</option><option>Emergency</option><option>Diagnostics</option>
+          </select>
+        </label>
+      </div>
+      <div class="two-fields">
+        <label>Address<input id="pAddress" required></label><label>Contact Number<input id="pContact" pattern="[6-9][0-9]{9}" maxlength="10" inputmode="numeric" required></label>
+      </div>
+      <div class="modal-actions"><button class="btn secondary" type="button" onclick="closePatientModal()">Cancel</button><button class="btn primary" type="submit">Register Patient</button></div>
+    </form>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
